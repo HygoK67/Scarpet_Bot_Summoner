@@ -1,6 +1,7 @@
 global_spawning_limit = 3;
 global_json_name_1 = 'bot_summoned_num_dict';
 global_json_name_2 = 'summoned_by';
+global_summon_prefix = 'bot_';
 
 __config() -> {
 	'stay_loaded' -> 'true',
@@ -10,20 +11,23 @@ __config() -> {
 	},
 	'arguments' -> {
 		'bot_name' -> {'type' -> 'term','suggest' -> []},
-	}
+	},
+	'scope' -> 'global',
 };
 
 
-__on_server_starts() -> {
+__on_start() -> {
 	write_file(global_json_name_1,'shared_json',{});
 	write_file(global_json_name_2,'shared_json',{});
 };
+
 
 __command() -> {
 	
 };
 
-summon(botname) -> (
+summon(originalbotname) -> (
+	botname = global_summon_prefix + originalbotname;
 	p = player();
 	player_name = p ~ 'name';
 	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
@@ -40,10 +44,10 @@ summon(botname) -> (
 				//该玩家未生成任何bot
 				spawned_player_num == null,
 				(
-					print('You have summoned one Bot now');
+					print('You have summoned 1 Bot now');
 					put(spawned_list,player_name,1);
 					put(summoned_by_list,botname,player_name);
-					run(str('player %s spawn in creative',botname));
+					run(str('player %s spawn in survival',botname));
 					run(str('tp %s %s',botname,player_name));
 					write_file(global_json_name_1,'shared_json',spawned_list);
 					write_file(global_json_name_2,'shared_json',summoned_by_list);
@@ -54,7 +58,7 @@ summon(botname) -> (
 					print(str('You have summoned %d Bots now',spawned_player_num+1));
 					put(spawned_list,player_name,spawned_player_num+1);
 					put(summoned_by_list,botname,player_name);
-					run(str('player %s spawn in creative',botname));
+					run(str('player %s spawn in survival',botname));
 					run(str('tp %s %s',botname,player_name));
 					write_file(global_json_name_1,'shared_json',spawned_list);
 					write_file(global_json_name_2,'shared_json',summoned_by_list);
@@ -79,7 +83,8 @@ summon(botname) -> (
 	);
 );
 
-kick(botname) -> (
+kick(originalbotname) -> (
+	botname = global_summon_prefix + originalbotname;
 	p = player();
 	player_name = p ~ 'name';
 	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
@@ -107,3 +112,21 @@ kick(botname) -> (
 		),
 	),
 );
+
+__on_player_dies(player) -> {
+	botname = player ~ 'name';
+	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
+	summoned_by = get(summoned_by_list,botname);
+	if
+	(
+		summoned_by != null,
+		(
+			spawned_list = decode_json(read_file(global_json_name_1,'shared_json'));
+			spawned_player_num = get(spawned_list,summoned_by);
+			put(spawned_list,summoned_by,spawned_player_num-1);
+			delete(summoned_by_list,botname);
+			write_file(global_json_name_1,'shared_json',spawned_list);
+			write_file(global_json_name_2,'shared_json',summoned_by_list);
+		),	
+	),
+};
