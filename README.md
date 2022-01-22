@@ -3,7 +3,7 @@ A scarpet script that helps server admins to limit the bot numbers each player c
 
 Use `/bot summon bot_name` and `/bot kick bot_name`
 
-Make sure the following rules are properly set:
+Make sure the following rules are properly set:  
 `CommandPlayer` is set to `ops`  
 `ScriptsAutoload` is set to `True`  
 `allowSpawningOfflinePlayers` is set to `True`  
