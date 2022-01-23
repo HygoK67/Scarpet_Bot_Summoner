@@ -8,9 +8,12 @@ __config() -> {
 	'commands' -> {
 		'summon <bot_name>' -> 'summon',
 		'kick <bot_name>' -> 'kick',
+		'attack <botname> <interval>' -> 'attack',
+		'use <botname> <interval>' -> 'use',
 	},
 	'arguments' -> {
 		'bot_name' -> {'type' -> 'term','suggest' -> []},
+		'interval' -> {'type' -> 'int','suggest' -> [-1,0,11]},
 	},
 	'scope' -> 'global',
 };
@@ -109,6 +112,88 @@ kick(originalbotname) -> (
 		summoned_by != player_name,
 		(
 			print('None of your business!');
+		),
+	),
+);
+
+attack(originalbotname,interval) -> (
+	p = player();
+	player_name = p ~ 'name';
+	botname = global_summon_prefix + originalbotname;
+	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
+	summoned_by = get(summoned_by_list,botname);
+	if
+	(
+		summoned_by == null,
+		(
+			print('That Bot has not been summoned yet');
+		),
+		player_name == summoned_by,
+		(
+			if
+			(
+				interval == -1,
+				(
+					print(str('%s is attacking continuously!',botname));
+					run(str('player %s attack continuous',botname));
+				),
+				interval == 0,
+				(
+					print(str('%s attacked once!',botname));
+					run(str('player %s attack once',botname));
+				),
+				interval > 0,
+				(
+					print(str('%s will attack every %d tick!',botname,interval));
+					run(str('player %s attack interval %d',botname,interval));
+				),
+				
+			),
+		),
+		player_name != summoned_by,
+		(
+			print('None of your business!')
+		),
+	),
+);
+
+use(originalbotname,interval) -> (
+	p = player();
+	player_name = p ~ 'name';
+	botname = global_summon_prefix + originalbotname;
+	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
+	summoned_by = get(summoned_by_list,botname);
+	if
+	(
+		summoned_by == null,
+		(
+			print('That Bot has not been summoned yet');
+		),
+		player_name == summoned_by,
+		(
+			if
+			(
+				interval == -1,
+				(
+					print(str('%s is using continuously!',botname));
+					run(str('player %s use continuous',botname));
+				),
+				interval == 0,
+				(
+					print(str('%s used once!',botname));
+					run(str('player %s use once',botname));
+				),
+				interval > 0,
+				(
+					print(str('%s will use every %d tick!',botname,interval));
+					run(str('player %s use interval %d',botname,interval));
+				),
+				
+			),
+		),
+		player_name != summoned_by,
+		(
+			print('None of your business!')
 		),
 	),
 );
