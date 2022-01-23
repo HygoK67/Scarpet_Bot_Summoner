@@ -13,6 +13,6 @@ Make sure the following rules are properly set:
 `ScriptsAutoload` is set to `True`  
 `allowSpawningOfflinePlayers` is set to `True`  
 
-You can change `global_spawning_limit` and `global_summon_prefix` in the begining of the script file
+You can change `global_spawning_limit` and `global_summon_prefix` at the begining of the script file
 
 Enjoy!
