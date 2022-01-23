@@ -152,7 +152,7 @@ attack(originalbotname,interval) -> (
 		),
 		player_name != summoned_by,
 		(
-			print('None of your business!')
+			print('None of your business!');
 		),
 	),
 );
@@ -193,7 +193,7 @@ use(originalbotname,interval) -> (
 		),
 		player_name != summoned_by,
 		(
-			print('None of your business!')
+			print('None of your business!');
 		),
 	),
 );
