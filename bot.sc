@@ -33,6 +33,36 @@ summon(originalbotname) -> (
 	botname = lower(global_summon_prefix + originalbotname);
 	p = player();
 	player_name = p ~ 'name';
+	schedule(0, 'handle_summon_request', player_name, botname);
+);
+
+kick(originalbotname) -> (
+	botname = lower(global_summon_prefix + originalbotname);
+	p = player();
+	player_name = p ~ 'name';
+	schedule(0, 'handle_kick_request', player_name, botname);
+);
+
+attack(originalbotname,interval) -> (
+	p = player();
+	player_name = p ~ 'name';
+	botname = lower(global_summon_prefix + originalbotname);
+	schedule(0, 'handle_attack_request', player_name, botname, interval);
+);
+
+use(originalbotname,interval) -> (
+	p = player();
+	player_name = p ~ 'name';
+	botname = lower(global_summon_prefix + originalbotname);
+	schedule(0, 'handle_use_request', player_name, botname, interval);
+);
+
+__on_player_dies(player) -> {
+	botname = lower(player ~ 'name');
+	schedule(0, 'handle_bot_dies_event', botname);
+};
+
+handle_summon_request(player_name,botname) -> (
 	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
 	summoned_by = get(summoned_by_list,botname);
 	if
@@ -91,10 +121,7 @@ summon(originalbotname) -> (
 	);
 );
 
-kick(originalbotname) -> (
-	botname = lower(global_summon_prefix + originalbotname);
-	p = player();
-	player_name = p ~ 'name';
+handle_kick_request(player_name,botname) -> (
 	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
 	summoned_by = get(summoned_by_list,botname);
 	if
@@ -124,10 +151,7 @@ kick(originalbotname) -> (
 	),
 );
 
-attack(originalbotname,interval) -> (
-	p = player();
-	player_name = p ~ 'name';
-	botname = lower(global_summon_prefix + originalbotname);
+handle_attack_request(player_name,botname,interval) -> (
 	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
 	summoned_by = get(summoned_by_list,botname);
 	if
@@ -170,10 +194,7 @@ attack(originalbotname,interval) -> (
 	),
 );
 
-use(originalbotname,interval) -> (
-	p = player();
-	player_name = p ~ 'name';
-	botname = lower(global_summon_prefix + originalbotname);
+handle_use_request(player_name,botname,interval) -> (
 	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
 	summoned_by = get(summoned_by_list,botname);
 	if
@@ -216,8 +237,7 @@ use(originalbotname,interval) -> (
 	),
 );
 
-__on_player_dies(player) -> {
-	botname = lower(player ~ 'name');
+handle_bot_dies_event(botname) -> (
 	summoned_by_list = decode_json(read_file(global_json_name_2,'shared_json'));
 	summoned_by = get(summoned_by_list,botname);
 	if
@@ -232,4 +252,4 @@ __on_player_dies(player) -> {
 			write_file(global_json_name_2,'shared_json',summoned_by_list);
 		),	
 	),
-};
+);
